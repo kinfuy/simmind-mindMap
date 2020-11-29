@@ -2,6 +2,7 @@
     <div class="drag">
         <div class="edtior">
             <textarea
+                v-if="editorType === 'TEXT'"
                 class="editor-text"
                 name="editor-text"
                 id="editor-text"
@@ -9,6 +10,22 @@
                 rows="10"
                 v-model="editorText"
             ></textarea>
+            <input
+                v-if="editorType === 'IMAGE_URL'"
+                type="text"
+                class="editor-text"
+                name="imageUrl"
+                id="imageUrl"
+                v-model="imageUrl"
+            />
+            <input
+                v-if="editorType === 'LINK_URL'"
+                type="text"
+                class="editor-text"
+                name="linkUrl"
+                id="linkUrl"
+                v-model="linkUrl"
+            />
             <div class="btn-warper">
                 <div class="btn-cancel" @click="headleCancel">取消</div>
                 <div class="btn-sure" @click="headleSubmit">确认</div>
@@ -22,7 +39,10 @@ export default {
     name: "edtior",
     data() {
         return {
+            editorType: "",
             editorText: "",
+            imageUrl: "",
+            linkUrl: "",
         };
     },
     methods: {
@@ -30,7 +50,15 @@ export default {
             this.$emit("headleCancel", false);
         },
         headleSubmit() {
-            this.$emit("headleSubmit", this.editorText);
+            if (this.editorType === "IMAGE_URL") {
+                this.$emit("headleSubmit", this.imageUrl);
+            }
+            if (this.editorType === "TEXT") {
+                this.$emit("headleSubmit", this.editorText);
+            }
+            if (this.editorType === "LINK_URL") {
+                this.$emit("headleSubmit", this.linkUrl);
+            }
         },
     },
 };

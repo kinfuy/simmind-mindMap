@@ -35,7 +35,7 @@ export default {
                 children: [
                     { data: { text: "新闻\nsrc/module/node.j" } },
                     {
-                        data: { text: "网页" },
+                        data: { text: "网页", expandState: "collapse" },
                         children: [
                             { data: { text: "新闻\nsrc/module/node.j" } },
                             { data: { text: "网页" } },
@@ -45,7 +45,7 @@ export default {
                             { data: { text: "图片" } },
                             { data: { text: "视频" } },
                             { data: { text: "地图" } },
-                            { data: { text: "百科", expandState: "collapse" } },
+                            { data: { text: "百科" } },
                         ],
                     },
                     { data: { text: "贴吧" } },
@@ -54,7 +54,7 @@ export default {
                     { data: { text: "图片" } },
                     { data: { text: "视频" } },
                     { data: { text: "地图" } },
-                    { data: { text: "百科", expandState: "collapse" } },
+                    { data: { text: "百科" } },
                 ],
             },
             zoom: 100,
@@ -88,7 +88,10 @@ export default {
             }
         },
         nodeClick() {
-            closeAllContextmenu();
+            if (contextmenuInstance) {
+                contextmenuInstance.$off("menuClick", this.menuClick);
+                closeAllContextmenu();
+            }
             var node = XMIND.getSelectedNode();
             if (node) {
                 console.log(1);
@@ -96,7 +99,9 @@ export default {
         },
         menuClick(e) {
             if (e.type === "NODE_ADD") {
-                EDITOR = editor();
+                EDITOR = editor({
+                    editorType: "TEXT",
+                });
                 EDITOR.$on("headleCancel", () => {
                     closeAlleditor();
                 });
@@ -105,18 +110,36 @@ export default {
                     closeAlleditor();
                 });
             }
-            e;
             if (e.type === "NODE_DELETE") {
                 XMIND.execCommand("RemoveNode");
             }
             if (e.type === "NODE_LINK") {
-                // XMIND.execCommand('HyperLink', url, title);
+                EDITOR = editor({ editorType: "LINK_URL" });
+                EDITOR.$on("headleCancel", () => {
+                    closeAlleditor();
+                });
+                EDITOR.$on("headleSubmit", (e) => {
+                    console.log(e);
+                    XMIND.execCommand("HyperLink", e, "");
+                    closeAlleditor();
+                });
             }
             if (e.type === "NODE_IMAGE") {
-                // XMIND.execCommand('Image', url, title);
+                EDITOR = editor({ editorType: "IMAGE_URL" });
+                EDITOR.$on("headleCancel", () => {
+                    closeAlleditor();
+                });
+                EDITOR.$on("headleSubmit", (e) => {
+                    console.log(e);
+                    XMIND.execCommand("Image", e, "");
+                    closeAlleditor();
+                });
             }
 
-            closeAllContextmenu();
+            if (contextmenuInstance) {
+                contextmenuInstance.$off("menuClick", this.menuClick);
+                closeAllContextmenu();
+            }
         },
         contextmenuClick(e) {
             let node = XMIND.getSelectedNode();
@@ -159,7 +182,10 @@ export default {
                 });
                 contextmenuInstance.$on("menuClick", this.menuClick);
             } else {
-                closeAllContextmenu();
+                if (contextmenuInstance) {
+                    contextmenuInstance.$off("menuClick", this.menuClick);
+                    closeAllContextmenu();
+                }
             }
         },
         douboleClick() {

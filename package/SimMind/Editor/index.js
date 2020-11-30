@@ -11,9 +11,9 @@ editorConstructor.prototype.close = function() {
     }
 };
 const closeAlleditor = editorConstructor.prototype.close;
-const editor = (options = {}) => {
+const editorBaseConstructor = (options = {}) => {
     if (Vue.prototype.$isServer) return;
-    let parent = document.body;
+    let parent = options.$el || document.body;
     editorConstructor.prototype.close();
     instance = new editorConstructor({
         el: document.createElement("div"),
@@ -23,4 +23,4 @@ const editor = (options = {}) => {
     return instance;
 };
 
-export { editor, closeAlleditor };
+export { editorBaseConstructor, closeAlleditor };

@@ -4,7 +4,11 @@
  */
 function treeInit(el) {
     let minder = new window.kityminder.Minder({
+        Vue: "",
         renderTo: el,
+    });
+    minder.setDefaultOptions({
+        defaultTheme: "fresh-green",
     });
     /**
      *初始化思维导图数据

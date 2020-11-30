@@ -1,5 +1,5 @@
 <template>
-    <div class="SimMind">
+    <div ref="SimMind" class="SimMind">
         <simMindTool />
         <simMindMap @mapEvent="headleMap" :zoom="zoom" />
         <div id="sim-tree" class="sim-tree"></div>
@@ -12,8 +12,7 @@ import {
     contextmenu,
     closeAllContextmenu,
 } from "../SimMind/contextmenu/index.js";
-// eslint-disable-next-line no-unused-vars
-import { editor, closeAlleditor } from "../SimMind/Editor/index";
+import { editorBaseConstructor, closeAlleditor } from "../SimMind/Editor/index";
 import simMindTool from "../SimMind/tool/index";
 import simMindMap from "../SimMind/map/index";
 import { enterFullScreen, isFullScreen, exitFullscreen } from "./utils/conmon";
@@ -34,20 +33,7 @@ export default {
                 },
                 children: [
                     { data: { text: "新闻\nsrc/module/node.j" } },
-                    {
-                        data: { text: "网页", expandState: "collapse" },
-                        children: [
-                            { data: { text: "新闻\nsrc/module/node.j" } },
-                            { data: { text: "网页" } },
-                            { data: { text: "贴吧" } },
-                            { data: { text: "知道" } },
-                            { data: { text: "音乐" } },
-                            { data: { text: "图片" } },
-                            { data: { text: "视频" } },
-                            { data: { text: "地图" } },
-                            { data: { text: "百科" } },
-                        ],
-                    },
+                    { data: { text: "网页" } },
                     { data: { text: "贴吧" } },
                     { data: { text: "知道" } },
                     { data: { text: "音乐" } },
@@ -88,60 +74,79 @@ export default {
             }
         },
         nodeClick() {
+            if (EDITOR) {
+                closeAlleditor();
+                EDITOR = null;
+            }
             if (contextmenuInstance) {
                 contextmenuInstance.$off("menuClick", this.menuClick);
                 closeAllContextmenu();
+                contextmenuInstance = null;
             }
-            var node = XMIND.getSelectedNode();
-            if (node) {
-                console.log(1);
-            }
+            // var node = XMIND.getSelectedNode();
+            // if (node) {
+            //     console.log(1);
+            // }
         },
         menuClick(e) {
+            if (contextmenuInstance) {
+                contextmenuInstance.$off("menuClick", this.menuClick);
+                closeAllContextmenu();
+                contextmenuInstance = null;
+            }
             if (e.type === "NODE_ADD") {
-                EDITOR = editor({
+                EDITOR = editorBaseConstructor({
                     editorType: "TEXT",
                 });
                 EDITOR.$on("headleCancel", () => {
                     closeAlleditor();
+                    EDITOR = null;
                 });
                 EDITOR.$on("headleSubmit", (e) => {
-                    XMIND.execCommand("AppendChildNode", e);
+                    XMIND.execCommand("AppendChildNode", e.editorText);
                     closeAlleditor();
+                    EDITOR = null;
                 });
             }
             if (e.type === "NODE_DELETE") {
                 XMIND.execCommand("RemoveNode");
             }
             if (e.type === "NODE_LINK") {
-                EDITOR = editor({ editorType: "LINK_URL" });
+                EDITOR = editorBaseConstructor({ editorType: "LINK_URL" });
                 EDITOR.$on("headleCancel", () => {
                     closeAlleditor();
+                    EDITOR = null;
                 });
                 EDITOR.$on("headleSubmit", (e) => {
-                    console.log(e);
                     XMIND.execCommand("HyperLink", e, "");
                     closeAlleditor();
+                    EDITOR = null;
                 });
             }
             if (e.type === "NODE_IMAGE") {
-                EDITOR = editor({ editorType: "IMAGE_URL" });
+                EDITOR = editorBaseConstructor({ editorType: "IMAGE_URL" });
                 EDITOR.$on("headleCancel", () => {
                     closeAlleditor();
+                    EDITOR = null;
                 });
                 EDITOR.$on("headleSubmit", (e) => {
-                    console.log(e);
                     XMIND.execCommand("Image", e, "");
                     closeAlleditor();
+                    EDITOR = null;
                 });
             }
 
             if (contextmenuInstance) {
                 contextmenuInstance.$off("menuClick", this.menuClick);
                 closeAllContextmenu();
+                contextmenuInstance = null;
             }
         },
         contextmenuClick(e) {
+            if (EDITOR) {
+                closeAlleditor();
+                EDITOR = null;
+            }
             let node = XMIND.getSelectedNode();
             if (node) {
                 contextmenuInstance = contextmenu({
@@ -185,27 +190,53 @@ export default {
                 if (contextmenuInstance) {
                     contextmenuInstance.$off("menuClick", this.menuClick);
                     closeAllContextmenu();
+                    contextmenuInstance = null;
                 }
             }
         },
         douboleClick() {
-            var node = XMIND.getSelectedNode();
+            let node = XMIND.getSelectedNode();
             if (node) {
-                console.log("编辑");
-                XMIND.execCommand("EditNode");
+                EDITOR = editorBaseConstructor({
+                    editorType: "TEXT",
+                    editorText: node.data.text,
+                    nodeData: Object.assign({}, node.data),
+                });
+                EDITOR.$on("headleCancel", () => {
+                    closeAlleditor();
+                    EDITOR = null;
+                });
+                EDITOR.$on("headleSubmit", (e) => {
+                    XMIND.execCommand("text", e.editorText);
+                    if (e.nodeData.image === "") {
+                        XMIND.execCommand("Image", "", "");
+                    }
+                    if (e.nodeData.hyperlink === null) {
+                        XMIND.execCommand("HyperLink", null, "");
+                    }
+                    closeAlleditor();
+                    EDITOR = null;
+                });
+            }
+        },
+        keyupEvent(e) {
+            if (EDITOR) return;
+            if (e.keyCode === 8 || e.keyCode === 46) {
+                XMIND.execCommand("RemoveNode");
             }
         },
     },
     mounted() {
         XMIND = treeInit("#sim-tree");
         XMIND.setInitData(this.tree);
-        XMIND.execCommand("Theme", "fresh-green");
         XMIND.on("click", this.nodeClick);
         XMIND.on("dblclick", this.douboleClick);
         XMIND.on("contextmenu", this.contextmenuClick);
+        window.addEventListener("keyup", this.keyupEvent);
         this.$once("hook:beforeDestroy", () => {
             XMIND.off("click", this.nodeClick);
             XMIND.off("contextmenu", this.contextmenuClick);
+            window.removeEventListener("keyup", this.keyupEvent);
         });
     },
 };

@@ -115,7 +115,7 @@ export default {
     width: 240px;
     background-color: #fff;
     border-radius: 5px;
-    animation: enter 0.8s;
+    animation: enter 0.5s;
     z-index: 999;
     zoom: 1;
     .title {
@@ -208,10 +208,10 @@ export default {
 }
 @keyframes enter {
     from {
-        opacity: 0;
+        transform: translateY(-300px);
     }
     to {
-        opacity: 1;
+        transform: translateY(0px);
     }
 }
 </style>

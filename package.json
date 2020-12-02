@@ -1,13 +1,14 @@
 {
     "name": "simmind",
-    "version": "0.1.0",
-    "private": true,
+    "version": "0.1.2",
+    "private": false,
+    "main": "dist/simmind.umd.min.js",
     "scripts": {
         "serve": "vue-cli-service serve",
         "start": "vue-cli-service serve",
         "build": "vue-cli-service build",
         "lint": "vue-cli-service lint",
-        "lib": "vue-cli-service build --target lib packages/index.js"
+        "lib": "vue-cli-service build --target lib package/index.js"
     },
     "dependencies": {
         "core-js": "^3.6.5",

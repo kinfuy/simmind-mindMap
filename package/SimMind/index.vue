@@ -1,6 +1,6 @@
 <template>
     <div ref="SimMind" class="SimMind">
-        <simMindTool />
+        <simMindTool @toolClick="headleToolEvent" :lockStatus="lockStatus" />
         <simMindMap @mapEvent="headleMap" :zoom="zoom" />
         <div id="sim-tree" class="sim-tree"></div>
     </div>
@@ -16,6 +16,7 @@ import { editorBaseConstructor, closeAlleditor } from "../SimMind/Editor/index";
 import simMindTool from "../SimMind/tool/index";
 import simMindMap from "../SimMind/map/index";
 import { enterFullScreen, isFullScreen, exitFullscreen } from "./utils/conmon";
+import { base64ToBlob, downImage } from "./utils/base64";
 let XMIND;
 let EDITOR;
 let contextmenuInstance;
@@ -25,25 +26,23 @@ export default {
         simMindTool,
         simMindMap,
     },
+    props: {
+        tree: {
+            type: Object,
+            default: () => {
+                return {
+                    data: {
+                        text: "SimMind",
+                    },
+                    children: [],
+                };
+            },
+        },
+    },
     data() {
         return {
-            tree: {
-                data: {
-                    text: "test111",
-                },
-                children: [
-                    { data: { text: "新闻\nsrc/module/node.j" } },
-                    { data: { text: "网页" } },
-                    { data: { text: "贴吧" } },
-                    { data: { text: "知道" } },
-                    { data: { text: "音乐" } },
-                    { data: { text: "图片" } },
-                    { data: { text: "视频" } },
-                    { data: { text: "地图" } },
-                    { data: { text: "百科" } },
-                ],
-            },
             zoom: 100,
+            lockStatus: false,
         };
     },
     methods: {
@@ -108,6 +107,31 @@ export default {
                     EDITOR = null;
                 });
             }
+            if (e.type === "NODE_EDIT") {
+                let node = XMIND.getSelectedNode();
+                if (node) {
+                    EDITOR = editorBaseConstructor({
+                        editorType: "TEXT",
+                        editorText: node.data.text,
+                        nodeData: Object.assign({}, node.data),
+                    });
+                    EDITOR.$on("headleCancel", () => {
+                        closeAlleditor();
+                        EDITOR = null;
+                    });
+                    EDITOR.$on("headleSubmit", (e) => {
+                        XMIND.execCommand("text", e.editorText);
+                        if (e.nodeData.image === "") {
+                            XMIND.execCommand("Image", "", "");
+                        }
+                        if (e.nodeData.hyperlink === null) {
+                            XMIND.execCommand("HyperLink", null, "");
+                        }
+                        closeAlleditor();
+                        EDITOR = null;
+                    });
+                }
+            }
             if (e.type === "NODE_DELETE") {
                 XMIND.execCommand("RemoveNode");
             }
@@ -135,7 +159,6 @@ export default {
                     EDITOR = null;
                 });
             }
-
             if (contextmenuInstance) {
                 contextmenuInstance.$off("menuClick", this.menuClick);
                 closeAllContextmenu();
@@ -161,6 +184,12 @@ export default {
                             icon: "icon-delete",
                             name: "删除节点",
                             type: "NODE_DELETE",
+                            data: {},
+                        },
+                        {
+                            icon: "icon-edit",
+                            name: "编辑节点",
+                            type: "NODE_EDIT",
                             data: {},
                         },
                         {
@@ -220,9 +249,46 @@ export default {
             }
         },
         keyupEvent(e) {
+            if (this.lockStatus) return;
+            if (contextmenuInstance) return;
             if (EDITOR) return;
             if (e.keyCode === 8 || e.keyCode === 46) {
                 XMIND.execCommand("RemoveNode");
+            }
+        },
+        headleToolEvent(e) {
+            switch (e.type) {
+                case "THEME":
+                    break;
+                case "DOWNLOAD": {
+                    console.log(XMIND);
+                    XMIND.exportData("png").then((res) => {
+                        let data = base64ToBlob(res, "image/png");
+                        downImage(data, "思维导图.png");
+                    });
+                    break;
+                }
+                case "LAYOUT":
+                    break;
+                case "CLEAR": {
+                    let root = XMIND.getRoot();
+                    XMIND.select(root, false);
+                    XMIND.execCommand("Camera", root, 100);
+                    XMIND.execCommand("ResetLayout");
+                    break;
+                }
+                case "LOCK": {
+                    this.lockStatus = true;
+                    XMIND.execCommand("Hand");
+                    break;
+                }
+                case "LOCKOUT": {
+                    this.lockStatus = false;
+                    XMIND.execCommand("Hand", false);
+                    break;
+                }
+                default:
+                    break;
             }
         },
     },

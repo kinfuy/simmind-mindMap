@@ -77,7 +77,6 @@ export default {
         justify-content: center;
         width: 35px;
         height: 35px;
-        overflow: hidden;
         cursor: pointer;
         color: #666;
         &:hover {

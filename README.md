@@ -1,24 +1,17 @@
 # simmind
 
+vue 思维导图，基于 kityminder-core 的二次开发
+
 ## Project setup
+
 ```
-npm install
+npm install simmind --save
+cnpm install simmind --save
+
 ```
 
-### Compiles and hot-reloads for development
 ```
-npm run serve
+import SimMind from 'simmind';
+import 'simmind/dist/simmind.css'
+Vue.use(SimMind);
 ```
-
-### Compiles and minifies for production
-```
-npm run build
-```
-
-### Lints and fixes files
-```
-npm run lint
-```
-
-### Customize configuration
-See [Configuration Reference](https://cli.vuejs.org/config/).

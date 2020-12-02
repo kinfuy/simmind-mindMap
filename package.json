@@ -1,6 +1,6 @@
 {
     "name": "simmind",
-    "version": "0.1.2",
+    "version": "1.0.5",
     "private": false,
     "main": "dist/simmind.umd.min.js",
     "scripts": {
@@ -13,7 +13,6 @@
     "dependencies": {
         "core-js": "^3.6.5",
         "kity": "^2.0.4",
-        "kityminder-core": "^1.4.50",
         "vue": "^2.6.11"
     },
     "devDependencies": {

@@ -1,12 +1,41 @@
 <template>
     <div id="app">
-        <SimMind />
+        <SimMind :options.sync="options" @savedata="headleSaveData" />
     </div>
 </template>
 
 <script>
 export default {
     name: "App",
+    data() {
+        return {
+            options: {
+                theme: "",
+                root: {
+                    data: {
+                        text: "Thezero",
+                    },
+                    children: [
+                        { data: { text: "Thezero/男" } },
+                        { data: { text: "工作邮箱：Yonghu520@outlook.com" } },
+                        {
+                            data: {
+                                text: "个人博客：https://blog.xkongkeji.com/",
+                            },
+                        },
+                        { data: { text: "QQ:1846930039(注明来自博客)" } },
+                        { data: { text: "职业：学生" } },
+                        { data: { text: "职业：学生" } },
+                    ],
+                },
+            },
+        };
+    },
+    methods: {
+        headleSaveData(options) {
+            this.options = options;
+        },
+    },
 };
 </script>
 

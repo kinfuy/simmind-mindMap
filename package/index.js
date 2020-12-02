@@ -1,7 +1,7 @@
 import SimMind from "./SimMind/";
 let components = [SimMind];
 import kity from "kity";
-import kityminder from "kityminder-core";
+import kityminder from "./SimMind/kityminder-core/kityminder.core.min";
 import "./SimMind/Icon/index.css";
 const install = function(Vue) {
     //全局注册组件

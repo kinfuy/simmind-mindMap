@@ -11,20 +11,16 @@
                 {{ item.name }}
             </div>
             <div v-if="item.extend" class="tool-extend">
-                <div v-if="item.type === 'LAYOUT'" class="layout">
-                    <i
-                        v-for="(item, index) in templateList"
-                        :key="index"
-                        :class="['iconfont', item.icon, 'layout-item']"
-                    ></i>
-                </div>
                 <div v-if="item.type === 'THEME'" class="theme">
-                    <div class="theme-item"></div>
-                    <div class="theme-item"></div>
-                    <div class="theme-item"></div>
-                    <div class="theme-item"></div>
-                    <div class="theme-item"></div>
-                    <div class="theme-item"></div>
+                    <div
+                        v-for="(item, index) in themeList"
+                        :key="index"
+                        @click="headleChangeTheme(item)"
+                        class="theme-item"
+                        :style="{ 'background-color': item.color }"
+                    >
+                        {{ item.name }}
+                    </div>
                 </div>
             </div>
         </div>
@@ -44,6 +40,16 @@ export default {
         return {
             toolList: [
                 {
+                    icon: "icon-unlock",
+                    name: "锁定",
+                    type: "LOCK",
+                },
+                {
+                    icon: "icon-save",
+                    name: "保存",
+                    type: "SAVE_DATA",
+                },
+                {
                     icon: "icon-skin-fill",
                     name: "主题",
                     type: "THEME",
@@ -55,48 +61,88 @@ export default {
                     type: "DOWNLOAD",
                     extend: true,
                 },
-                {
-                    icon: "icon-number",
-                    name: "布局",
-                    type: "LAYOUT",
-                    extend: true,
-                },
+                // {
+                //     icon: "icon-number",
+                //     name: "布局",
+                //     type: "LAYOUT",
+                //     extend: true,
+                // },
                 {
                     icon: "icon-ungroup",
                     name: "整理",
                     type: "CLEAR",
                 },
-                {
-                    icon: "icon-unlock",
-                    name: "锁定",
-                    type: "LOCK",
-                },
             ],
-            templateList: [
+            themeList: [
                 {
-                    name: "",
-                    type: "",
-                    icon: "icon-siweidaotu_huaban1",
+                    name: "经典",
+                    type: "classic",
+                    color: "rgb(233, 223, 152)",
                 },
                 {
-                    name: "",
-                    type: "",
-                    icon: "icon-siweidaotuchangguiti-",
+                    name: "紧凑经典",
+                    type: "classic-compact",
+                    color: "rgb(233, 223, 152)",
                 },
                 {
-                    name: "",
-                    type: "",
-                    icon: "icon-jiagoutu",
+                    name: "天空蓝",
+                    type: "fresh-blue",
+                    color: "rgb(115, 161, 191)",
                 },
                 {
-                    name: "",
-                    type: "",
-                    icon: "icon-luoxuanbuju",
+                    name: "紧凑蓝",
+                    type: "fresh-blue-compat",
+                    color: "rgb(115, 161, 191)",
                 },
                 {
-                    name: "",
-                    type: "",
-                    icon: "icon-yugutou",
+                    name: "文艺绿",
+                    type: "fresh-green",
+                    color: "rgb(115, 191, 118)",
+                },
+                {
+                    name: "紧凑绿",
+                    type: "fresh-green-compat",
+                    color: "rgb(115, 191, 118)",
+                },
+                {
+                    name: "芭比粉",
+                    type: "fresh-pink",
+                    color: "rgb(191, 115, 148)",
+                },
+                {
+                    name: "紧凑粉",
+                    type: "fresh-pink-compat",
+                    color: "rgb(191, 115, 148)",
+                },
+                {
+                    name: "薰衣紫",
+                    type: "fresh-purple",
+                    color: "rgb(123, 115, 191)",
+                },
+                {
+                    name: "紧凑紫",
+                    type: "fresh-purple-compat",
+                    color: "rgb(123, 115, 191)",
+                },
+                {
+                    name: "清新红",
+                    type: "fresh-red",
+                    color: "rgb(191, 115, 115)",
+                },
+                {
+                    name: "紧凑红",
+                    type: "fresh-red-compat",
+                    color: "rgb(191, 115, 115)",
+                },
+                {
+                    name: "泥土黄",
+                    type: "fresh-soil",
+                    color: "rgb(191, 147, 115)",
+                },
+                {
+                    name: "紧凑黄",
+                    type: "fresh-soil-compat",
+                    color: "rgb(191, 147, 115)",
                 },
             ],
         };
@@ -108,7 +154,7 @@ export default {
                     {
                         icon: "icon-lock",
                         name: "解锁",
-                        type: "extend",
+                        type: "LOCKOUT",
                     },
                 ];
             } else {
@@ -119,6 +165,12 @@ export default {
     methods: {
         headleClick(item) {
             this.$emit("toolClick", item);
+        },
+        headleChangeTheme(item) {
+            this.$emit("chnageTheme", item.type);
+        },
+        headleTemplate(item) {
+            this.$emit("chnageTheme", item.type);
         },
     },
 };
@@ -156,25 +208,21 @@ export default {
             top: 0;
             left: 100%;
             z-index: 999;
-            .layout {
-                display: flex;
-                align-items: center;
-                .layout-item {
-                    font-size: 55px;
-                    padding: 0 10px;
-                    color: #999;
-                    &:hover {
-                        color: #66cc66;
-                    }
-                }
-            }
             .theme {
                 display: flex;
                 align-items: center;
+                flex-wrap: wrap;
+                width: 200px;
                 .theme-item {
-                    width: 50px;
+                    width: 80px;
                     height: 60px;
-                    border: 1px solid red;
+                    font-size: 14px;
+                    line-height: 60px;
+                    margin-left: 10px;
+                    margin-top: 10px;
+                    border-radius: 4px;
+                    text-align: center;
+                    color: #fff;
                 }
             }
         }

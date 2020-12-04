@@ -1,6 +1,10 @@
 <template>
     <div id="app">
-        <SimMind :options.sync="options" @savedata="headleSaveData" />
+        <SimMind
+            :options.sync="options"
+            @savedata="headleSaveData"
+            :lockStatus.sync="lockStatus"
+        />
     </div>
 </template>
 
@@ -9,6 +13,7 @@ export default {
     name: "App",
     data() {
         return {
+            lockStatus: false,
             options: {
                 theme: "",
                 root: {

@@ -2,8 +2,8 @@
     <div ref="SimMind" class="SimMind">
         <simMindTool
             @toolClick="headleToolEvent"
-            @chnageTheme="headleChangeTheme"
-            :lockStatus="lockStatus"
+            @changeTheme="headleChangeTheme"
+            :lockTempStatus.sync="lockTempStatus"
         />
         <simMindMap @mapEvent="headleMap" :zoom="zoom" />
         <div id="sim-tree" class="sim-tree"></div>
@@ -50,19 +50,20 @@ export default {
             theme: "fresh-green",
         },
     },
+    computed: {
+        lockTempStatus: {
+            get() {
+                return this.lockStatus;
+            },
+            set(val) {
+                this.$emit("update:lockStatus", val);
+            },
+        },
+    },
     data() {
         return {
             zoom: 100,
-            treeData: this.tree,
         };
-    },
-    watch: {
-        treeData: {
-            handler(newName) {
-                console.log(newName);
-            },
-            deep: true,
-        },
     },
     methods: {
         clearEditor() {
@@ -138,10 +139,13 @@ export default {
         nodeClick() {
             this.clearEditor();
             this.clearContextmenu();
-            // var node = XMIND.getSelectedNode();
-            // if (node) {
-            //     console.log(1);
-            // }
+            let node = XMIND.getSelectedNode();
+            if (!node) return;
+            this.$emit("nodeclick", {
+                data: node.data,
+                children: node.children,
+                parent: parent,
+            });
         },
         menuClick(e) {
             this.clearContextmenu();
@@ -185,6 +189,9 @@ export default {
                 root: data.root,
                 theme: data.theme,
             });
+        },
+        statusUpdata() {
+            this.$emit("update:lockTempStatus", this.lockTempStatus);
         },
         contextmenuClick(e) {
             this.clearEditor();
@@ -285,13 +292,19 @@ export default {
                     break;
                 }
                 case "LOCK": {
-                    this.lockStatus = true;
+                    this.lockTempStatus = true;
+                    this.statusUpdata();
                     XMIND.execCommand("Hand");
                     break;
                 }
                 case "LOCKOUT": {
-                    this.lockStatus = false;
+                    this.lockTempStatus = false;
+                    this.statusUpdata();
                     XMIND.execCommand("Hand", false);
+                    break;
+                }
+                case "ROLL_BACK": {
+                    this.$emit("rollback");
                     break;
                 }
                 default:
@@ -325,6 +338,7 @@ export default {
 
 <style lang="scss" scoped>
 .SimMind {
+    position: relative;
     width: 100%;
     height: 100%;
 }

@@ -1,8 +1,12 @@
 {
     "name": "simmind",
-    "version": "1.0.5",
+    "version": "1.1.0",
     "private": false,
     "main": "dist/simmind.umd.min.js",
+    "author": {
+        "name": "Thzero",
+        "email": "1846930039@qq.com"
+    },
     "scripts": {
         "serve": "vue-cli-service serve",
         "start": "vue-cli-service serve",
@@ -39,10 +43,5 @@
             "parser": "babel-eslint"
         },
         "rules": {}
-    },
-    "browserslist": [
-        "> 1%",
-        "last 2 versions",
-        "not dead"
-    ]
+    }
 }

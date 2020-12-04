@@ -31,7 +31,7 @@
 export default {
     name: "simMindTool",
     props: {
-        lockStatus: {
+        lockTempStatus: {
             type: Boolean,
             default: false,
         },
@@ -39,6 +39,11 @@ export default {
     data() {
         return {
             toolList: [
+                {
+                    icon: "icon-rollback",
+                    name: "返回",
+                    type: "ROLL_BACK",
+                },
                 {
                     icon: "icon-unlock",
                     name: "锁定",
@@ -59,14 +64,7 @@ export default {
                     icon: "icon-cloud-download",
                     name: "下载",
                     type: "DOWNLOAD",
-                    extend: true,
                 },
-                // {
-                //     icon: "icon-number",
-                //     name: "布局",
-                //     type: "LAYOUT",
-                //     extend: true,
-                // },
                 {
                     icon: "icon-ungroup",
                     name: "整理",
@@ -149,7 +147,7 @@ export default {
     },
     computed: {
         toolLists() {
-            if (this.lockStatus) {
+            if (this.lockTempStatus) {
                 return [
                     {
                         icon: "icon-lock",
@@ -167,10 +165,7 @@ export default {
             this.$emit("toolClick", item);
         },
         headleChangeTheme(item) {
-            this.$emit("chnageTheme", item.type);
-        },
-        headleTemplate(item) {
-            this.$emit("chnageTheme", item.type);
+            this.$emit("changeTheme", item.type);
         },
     },
 };

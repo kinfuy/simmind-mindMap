@@ -35,6 +35,10 @@ export default {
             type: Boolean,
             default: false,
         },
+        dragenable: {
+            type: Boolean,
+            default: false,
+        },
     },
     data() {
         return {
@@ -45,14 +49,14 @@ export default {
                     type: "ROLL_BACK",
                 },
                 {
-                    icon: "icon-unlock",
-                    name: "锁定",
-                    type: "LOCK",
-                },
-                {
                     icon: "icon-save",
                     name: "保存",
                     type: "SAVE_DATA",
+                },
+                {
+                    icon: this.dragenable ? "icon-shubiao" : "icon-tuozhuai",
+                    name: this.dragenable ? "鼠标" : "拖拽",
+                    type: "DRAG_NODE",
                 },
                 {
                     icon: "icon-skin-fill",
@@ -148,15 +152,14 @@ export default {
     computed: {
         toolLists() {
             if (this.lockTempStatus) {
-                return [
-                    {
-                        icon: "icon-lock",
-                        name: "解锁",
-                        type: "LOCKOUT",
-                    },
-                ];
+                return [];
             } else {
-                return this.toolList;
+                let templateArr = [...this.toolList];
+                templateArr[2].icon = this.dragenable
+                    ? "icon-shubiao"
+                    : "icon-tuozhuai";
+                templateArr[2].name = this.dragenable ? "鼠标" : "拖拽";
+                return templateArr;
             }
         },
     },
@@ -209,10 +212,10 @@ export default {
                 flex-wrap: wrap;
                 width: 200px;
                 .theme-item {
-                    width: 80px;
-                    height: 60px;
+                    width: 60px;
+                    height: 30px;
                     font-size: 14px;
-                    line-height: 60px;
+                    line-height: 30px;
                     margin-left: 10px;
                     margin-top: 10px;
                     border-radius: 4px;

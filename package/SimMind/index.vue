@@ -4,6 +4,7 @@
             @toolClick="headleToolEvent"
             @changeTheme="headleChangeTheme"
             :lockTempStatus.sync="lockTempStatus"
+            :dragenable="dragenable"
         />
         <simMindMap @mapEvent="headleMap" :zoom="zoom" />
         <div id="sim-tree" class="sim-tree"></div>
@@ -63,6 +64,7 @@ export default {
     data() {
         return {
             zoom: 100,
+            dragenable: false,
         };
     },
     methods: {
@@ -269,10 +271,26 @@ export default {
                 case "THEME":
                     break;
                 case "DOWNLOAD": {
-                    XMIND.exportData("png").then((res) => {
-                        let data = base64ToBlob(res, "image/png");
-                        downImage(data, "思维导图.png");
-                    });
+                    try {
+                        XMIND.exportData("png").then((res) => {
+                            let data = base64ToBlob(res, "image/png");
+                            downImage(data, "思维导图.png");
+                        });
+                    } catch (error) {
+                        alert(error);
+                    }
+                    break;
+                }
+                case "DRAG_NODE": {
+                    if (this.dragenable) {
+                        this.dragenable = false;
+                        this.statusUpdata();
+                        XMIND.execCommand("Hand");
+                    } else {
+                        this.dragenable = true;
+                        this.statusUpdata();
+                        XMIND.execCommand("Hand", false);
+                    }
                     break;
                 }
                 case "SAVE_DATA": {
@@ -289,18 +307,6 @@ export default {
                     XMIND.execCommand("Camera", root, 100);
                     XMIND.execCommand("ResetLayout");
                     this.dataUpdata();
-                    break;
-                }
-                case "LOCK": {
-                    this.lockTempStatus = true;
-                    this.statusUpdata();
-                    XMIND.execCommand("Hand");
-                    break;
-                }
-                case "LOCKOUT": {
-                    this.lockTempStatus = false;
-                    this.statusUpdata();
-                    XMIND.execCommand("Hand", false);
                     break;
                 }
                 case "ROLL_BACK": {

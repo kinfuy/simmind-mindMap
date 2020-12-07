@@ -107,8 +107,9 @@ export default {
             this.dataUpdata();
             this.clearEditor();
         },
-        addImage(e) {
+        async addImage(e) {
             XMIND.execCommand("Image", e, "");
+            await XMIND.exportData("json");
             this.dataUpdata();
             this.clearEditor();
         },
@@ -185,8 +186,8 @@ export default {
                 EDITOR.$on("headleSubmit", this.addImage);
             }
         },
-        dataUpdata() {
-            let data = XMIND.exportJson();
+        async dataUpdata() {
+            let data = await XMIND.exportData("json");
             this.$emit("update:options", {
                 root: data.root,
                 theme: data.theme,

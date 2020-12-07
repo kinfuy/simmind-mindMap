@@ -37,8 +37,8 @@ export default {
         };
     },
     methods: {
-        headleSaveData(options) {
-            this.options = options;
+        headleSaveData() {
+            console.log(this.options);
         },
     },
 };

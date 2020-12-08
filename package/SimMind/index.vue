@@ -32,23 +32,17 @@ export default {
         simMindMap,
     },
     props: {
-        tree: {
-            type: Object,
-            default: () => {
-                return {
-                    data: {
-                        text: "SimMind",
-                    },
-                    children: [],
-                };
-            },
-        },
         lockStatus: {
             type: Boolean,
             default: false,
         },
-        options: {
-            theme: "fresh-green",
+        root: {
+            type: Object,
+            required: true,
+        },
+        theme: {
+            type: String,
+            required: true,
         },
     },
     computed: {
@@ -66,6 +60,18 @@ export default {
             zoom: 100,
             dragenable: false,
         };
+    },
+    watch: {
+        root(item) {
+            if (item._updata) {
+                XMIND.setInitData(item);
+            }
+        },
+        theme(item) {
+            if (item && item !== "") {
+                XMIND.execCommand("Theme", item);
+            }
+        },
     },
     methods: {
         clearEditor() {
@@ -185,13 +191,17 @@ export default {
                 EDITOR.$on("headleCancel", this.clearEditor);
                 EDITOR.$on("headleSubmit", this.addImage);
             }
+            if (e.type === "NODE_MORE") {
+                this.$emit("nodemore");
+            }
         },
         async dataUpdata() {
             let data = await XMIND.exportData("json");
-            this.$emit("update:options", {
-                root: data.root,
-                theme: data.theme,
-            });
+            this.$emit("update:root", JSON.parse(data).root);
+        },
+        async updataTheme() {
+            let theme = XMIND.queryCommandValue("Theme");
+            this.$emit("update:theme", theme);
         },
         statusUpdata() {
             this.$emit("update:lockTempStatus", this.lockTempStatus);
@@ -267,6 +277,18 @@ export default {
                 this.dataUpdata();
             }
         },
+        getNowView() {
+            return new Promise((resolve, reject) => {
+                try {
+                    XMIND.exportData("png").then((res) => {
+                        let data = base64ToBlob(res, "image/png");
+                        resolve(data);
+                    });
+                } catch (error) {
+                    reject(error);
+                }
+            });
+        },
         headleToolEvent(e) {
             switch (e.type) {
                 case "THEME":
@@ -320,14 +342,14 @@ export default {
         },
         headleChangeTheme(e) {
             XMIND.execCommand("Theme", e);
-            this.dataUpdata();
+            this.updataTheme();
         },
     },
     mounted() {
         XMIND = treeInit("#sim-tree");
-        XMIND.setInitData(this.options.root);
-        if (this.options.theme && this.options.theme !== "") {
-            XMIND.execCommand("Theme", this.options.theme);
+        XMIND.setInitData(this.root);
+        if (this.theme && this.theme !== "") {
+            XMIND.execCommand("Theme", this.theme);
         }
         XMIND.on("click", this.nodeClick);
         XMIND.on("dblclick", this.douboleClick);

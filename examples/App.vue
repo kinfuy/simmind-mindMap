@@ -15,7 +15,7 @@ export default {
     name: "App",
     data() {
         return {
-            lockStatus: false,
+            lockStatus: true,
             theme: "",
             root: {},
         };

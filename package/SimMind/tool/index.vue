@@ -152,7 +152,13 @@ export default {
     computed: {
         toolLists() {
             if (this.lockTempStatus) {
-                return [];
+                return [
+                    {
+                        icon: "icon-rollback",
+                        name: "返回",
+                        type: "ROLL_BACK",
+                    },
+                ];
             } else {
                 let templateArr = [...this.toolList];
                 templateArr[2].icon = this.dragenable

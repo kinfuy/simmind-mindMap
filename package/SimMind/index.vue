@@ -72,6 +72,13 @@ export default {
                 XMIND.execCommand("Theme", item);
             }
         },
+        lockStatus(val) {
+            if (val) {
+                XMIND.execCommand("Hand");
+            } else {
+                XMIND.execCommand("Hand", false);
+            }
+        },
     },
     methods: {
         clearEditor() {
@@ -93,11 +100,13 @@ export default {
             }
         },
         addNode(e) {
+            if (this.lockStatus) return;
             XMIND.execCommand("AppendChildNode", e.editorText);
             this.dataUpdata();
             this.clearEditor();
         },
         editNode(e) {
+            if (this.lockStatus) return;
             XMIND.execCommand("text", e.editorText);
             if (e.nodeData.image === "") {
                 XMIND.execCommand("Image", "", "");
@@ -109,11 +118,13 @@ export default {
             this.clearEditor();
         },
         addLink(e) {
+            if (this.lockStatus) return;
             XMIND.execCommand("HyperLink", e, "");
             this.dataUpdata();
             this.clearEditor();
         },
         async addImage(e) {
+            if (this.lockStatus) return;
             XMIND.execCommand("Image", e, "");
             await XMIND.exportData("json");
             this.dataUpdata();
@@ -146,6 +157,7 @@ export default {
             }
         },
         nodeClick() {
+            if (this.lockStatus) return;
             this.clearEditor();
             this.clearContextmenu();
             let node = XMIND.getSelectedNode();
@@ -207,6 +219,7 @@ export default {
             this.$emit("update:lockTempStatus", this.lockTempStatus);
         },
         contextmenuClick(e) {
+            if (this.lockStatus) return;
             this.clearEditor();
             this.clearContextmenu();
             let node = XMIND.getSelectedNode();
@@ -257,6 +270,7 @@ export default {
             }
         },
         douboleClick() {
+            if (this.lockStatus) return;
             let node = XMIND.getSelectedNode();
             if (node) {
                 EDITOR = editorBaseConstructor({
@@ -290,6 +304,7 @@ export default {
             });
         },
         headleToolEvent(e) {
+            if (this.lockStatus) return;
             switch (e.type) {
                 case "THEME":
                     break;
@@ -341,6 +356,7 @@ export default {
             }
         },
         headleChangeTheme(e) {
+            if (this.lockStatus) return;
             XMIND.execCommand("Theme", e);
             this.updataTheme();
         },
@@ -350,6 +366,9 @@ export default {
         XMIND.setInitData(this.root);
         if (this.theme && this.theme !== "") {
             XMIND.execCommand("Theme", this.theme);
+        }
+        if (this.lockStatus) {
+            XMIND.execCommand("Hand");
         }
         XMIND.on("click", this.nodeClick);
         XMIND.on("dblclick", this.douboleClick);

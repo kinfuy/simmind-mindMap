@@ -40,13 +40,27 @@
             </div>
         </div>
         <input
+            type="file"
+            id="fileCover"
+            @change="chooseCover($event)"
+            style="display: none;"
+        />
+        <label
             v-if="editorType === 'IMAGE_URL'"
-            placeholder="输入图片地址"
+            for="fileCover"
+            class="image-upload"
+        >
+            <img class="image-cover" v-if="imageUrl !== ''" :src="imageUrl" />
+            <i v-else class="iconfont icon-cloud-upload"></i>
+        </label>
+        <input
+            v-if="editorType === 'TAG_TEXT'"
+            placeholder="支持表情标签"
             type="text"
             class="editor-input"
-            name="imageUrl"
-            id="imageUrl"
-            v-model="imageUrl"
+            name="tagText"
+            id="tagText"
+            v-model="tagText"
         />
         <input
             v-if="editorType === 'LINK_URL'"
@@ -70,6 +84,10 @@ export default {
             imageUrl: "",
             linkUrl: "",
             nodeData: {},
+            tagText: "",
+            uploadImage: function() {
+                throw new Error("没有提供图片上传方法");
+            },
         };
     },
     methods: {
@@ -80,6 +98,9 @@ export default {
             if (this.editorType === "IMAGE_URL") {
                 this.$emit("headleSubmit", this.imageUrl);
             }
+            if (this.editorType === "TAG_TEXT") {
+                this.$emit("headleSubmit", this.tagText);
+            }
             if (this.editorType === "TEXT") {
                 this.$emit("headleSubmit", {
                     editorText: this.editorText,
@@ -89,6 +110,15 @@ export default {
             if (this.editorType === "LINK_URL") {
                 this.$emit("headleSubmit", this.linkUrl);
             }
+        },
+        async chooseCover(e) {
+            await this.uploadImage(e.target.files[0])
+                .then((res) => {
+                    this.imageUrl = res;
+                })
+                .catch((err) => {
+                    throw new Error(err);
+                });
         },
         headleDeleteImage() {
             this.nodeData.image = "";
@@ -167,6 +197,23 @@ export default {
         }
         &:hover .imageCover {
             height: 30px;
+        }
+    }
+    .image-upload {
+        height: 150px;
+        width: 200px;
+        border: 2px solid#FF99CC;
+        line-height: 150px;
+        text-align: center;
+        cursor: pointer;
+        .image-cover {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        i {
+            font-size: 80px;
+            color: #999;
         }
     }
     .editor-input {

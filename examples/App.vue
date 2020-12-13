@@ -6,6 +6,7 @@
             :theme.sync="theme"
             @savedata="headleSaveData"
             :lockStatus.sync="lockStatus"
+            :uploadImage="uploadImage"
         />
     </div>
 </template>
@@ -15,7 +16,7 @@ export default {
     name: "App",
     data() {
         return {
-            lockStatus: true,
+            lockStatus: false,
             theme: "",
             root: {},
         };
@@ -25,6 +26,18 @@ export default {
             let data = await this.$refs.test.getNowView();
             console.log(data);
             console.log(this.$refs.test.getNowView);
+        },
+        uploadImage(e) {
+            // eslint-disable-next-line no-unused-vars
+            return new Promise((reslove, reject) => {
+                console.log(e);
+                setTimeout(
+                    reslove(
+                        "https://blog.xkongkeji.com/static/img/cover1.fb9e08c.jpg"
+                    ),
+                    3000
+                );
+            });
         },
     },
     async mounted() {

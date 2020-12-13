@@ -44,6 +44,10 @@ export default {
             type: String,
             required: true,
         },
+        uploadImage: {
+            type: Function,
+            required: true,
+        },
     },
     computed: {
         lockTempStatus: {
@@ -87,6 +91,7 @@ export default {
                 EDITOR.$off("headleSubmit", this.addNode);
                 EDITOR.$off("headleSubmit", this.editNode);
                 EDITOR.$off("headleSubmit", this.addLink);
+                EDITOR.$off("headleSubmit", this.addTag);
                 EDITOR.$off("headleSubmit", this.addImage);
                 closeAlleditor();
                 EDITOR = null;
@@ -119,16 +124,35 @@ export default {
         },
         addLink(e) {
             if (this.lockStatus) return;
-            XMIND.execCommand("HyperLink", e, "");
+            let reg = /http[s]{0,1}:\/\/([\w.]+\/?)\S*/;
+            if (reg.test(e)) {
+                XMIND.execCommand("HyperLink", e, "");
+                this.dataUpdata();
+                this.clearEditor();
+            } else {
+                this.$emit("error", "资源地址不合法");
+                this.clearEditor();
+            }
+        },
+        addTag(resource) {
+            let tagList = XMIND.queryCommandValue("Resource");
+            tagList.push(resource);
+            XMIND.execCommand("Resource", tagList);
             this.dataUpdata();
             this.clearEditor();
         },
         async addImage(e) {
             if (this.lockStatus) return;
-            XMIND.execCommand("Image", e, "");
-            await XMIND.exportData("json");
-            this.dataUpdata();
-            this.clearEditor();
+            let reg = /http[s]{0,1}:\/\/([\w.]+\/?)\S*/;
+            if (reg.test(e)) {
+                XMIND.execCommand("Image", e, "");
+                await XMIND.exportData("json");
+                this.dataUpdata();
+                this.clearEditor();
+            } else {
+                this.$emit("error", "资源地址不合法");
+                this.clearEditor();
+            }
         },
         headleMap(e) {
             if (e === "VIEW_FULL") {
@@ -193,13 +217,23 @@ export default {
                 XMIND.execCommand("RemoveNode");
                 this.dataUpdata();
             }
+            if (e.type === "NODE_TAG") {
+                EDITOR = editorBaseConstructor({ editorType: "TAG_TEXT" });
+                EDITOR.$on("headleCancel", this.clearEditor);
+                EDITOR.$on("headleSubmit", this.addTag);
+            }
             if (e.type === "NODE_LINK") {
-                EDITOR = editorBaseConstructor({ editorType: "LINK_URL" });
+                EDITOR = editorBaseConstructor({
+                    editorType: "LINK_URL",
+                });
                 EDITOR.$on("headleCancel", this.clearEditor);
                 EDITOR.$on("headleSubmit", this.addLink);
             }
             if (e.type === "NODE_IMAGE") {
-                EDITOR = editorBaseConstructor({ editorType: "IMAGE_URL" });
+                EDITOR = editorBaseConstructor({
+                    editorType: "IMAGE_URL",
+                    uploadImage: this.uploadImage,
+                });
                 EDITOR.$on("headleCancel", this.clearEditor);
                 EDITOR.$on("headleSubmit", this.addImage);
             }
@@ -244,6 +278,12 @@ export default {
                             type: "NODE_EDIT",
                             data: {},
                         },
+                        // {
+                        //     icon: "icon-tag",
+                        //     name: "添加标签",
+                        //     type: "NODE_TAG",
+                        //     data: {},
+                        // },
                         {
                             icon: "icon-share",
                             name: "插入超链接",

@@ -45,7 +45,6 @@ export default {
         },
         uploadImage: {
             type: Function,
-            required: true,
         },
     },
     computed: {

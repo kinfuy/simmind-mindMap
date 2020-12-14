@@ -42,7 +42,6 @@ export default {
         },
         theme: {
             type: String,
-            required: true,
         },
         uploadImage: {
             type: Function,
@@ -142,17 +141,10 @@ export default {
             this.clearEditor();
         },
         async addImage(e) {
-            if (this.lockStatus) return;
-            let reg = /http[s]{0,1}:\/\/([\w.]+\/?)\S*/;
-            if (reg.test(e)) {
-                XMIND.execCommand("Image", e, "");
-                await XMIND.exportData("json");
-                this.dataUpdata();
-                this.clearEditor();
-            } else {
-                this.$emit("error", "资源地址不合法");
-                this.clearEditor();
-            }
+            XMIND.execCommand("Image", e, "");
+            await XMIND.exportData("json");
+            this.dataUpdata();
+            this.clearEditor();
         },
         headleMap(e) {
             if (e === "VIEW_FULL") {
@@ -344,7 +336,7 @@ export default {
             });
         },
         headleToolEvent(e) {
-            if (this.lockStatus) return;
+            if (this.lockStatus && e.type !== "ROLL_BACK") return;
             switch (e.type) {
                 case "THEME":
                     break;

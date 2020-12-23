@@ -382,6 +382,10 @@ export default {
                     this.$emit("rollback");
                     break;
                 }
+                case "IMPORT_DATA": {
+                    this.$emit("importdata");
+                    break;
+                }
                 default:
                     break;
             }

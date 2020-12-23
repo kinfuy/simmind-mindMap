@@ -65,6 +65,11 @@ export default {
                     extend: true,
                 },
                 {
+                    icon: "icon-cloud-upload",
+                    name: "导入",
+                    type: "IMPORT_DATA",
+                },
+                {
                     icon: "icon-cloud-download",
                     name: "下载",
                     type: "DOWNLOAD",

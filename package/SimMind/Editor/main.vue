@@ -1,5 +1,5 @@
 <template>
-    <div class="edtior">
+    <div :style="[{left:siteInfo.X+'px'},{top:siteInfo.Y+'px'},{ transform: siteInfo.X !== ''?'translate(-50%,-50%)':''}]" :class="['edtior',{'editor-side':siteInfo.X === ''}]">
         <div class="btn-warper">
             <i class="iconfont icon-check btn-cancel" @click="headleSubmit"></i>
             <i class="iconfont icon-close btn-sure" @click="headleCancel"></i>
@@ -85,6 +85,10 @@ export default {
             linkUrl: "",
             nodeData: {},
             tagText: "",
+            siteInfo: {
+                X:'',
+                Y:''
+            },
             uploadImage: function() {
                 throw new Error("没有提供图片上传方法");
             },
@@ -132,10 +136,13 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.edtior {
-    position: absolute;
+.editor-side{
     right: 10px;
     top: 50px;
+    animation: enter 0.5s;
+}
+.edtior {
+    position:absolute;
     display: flex;
     flex-direction: column;
     justify-content: space-between;
@@ -145,7 +152,6 @@ export default {
     width: 240px;
     background-color: #fff;
     border-radius: 5px;
-    animation: enter 0.5s;
     z-index: 999;
     zoom: 1;
     .title {
@@ -258,7 +264,7 @@ export default {
         transform: translateY(-300px);
     }
     to {
-        transform: translateY(0px);
+        transform: translateY(0);
     }
 }
 </style>

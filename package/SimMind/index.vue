@@ -16,8 +16,8 @@ import treeInit from "./main";
 import {
     contextmenu,
     closeAllContextmenu,
-} from "../SimMind/contextmenu/index.js";
-import { editorBaseConstructor, closeAlleditor } from "../SimMind/Editor/index";
+} from "../SimMind/contextmenu/index.js"; // 导入鼠标右键菜单
+import { editorBaseConstructor, closeAlleditor } from "../SimMind/Editor/index"; // 导入编辑区组件
 import simMindTool from "../SimMind/tool/index";
 import simMindMap from "../SimMind/map/index";
 import { enterFullScreen, isFullScreen, exitFullscreen } from "./utils/conmon";
@@ -298,7 +298,7 @@ export default {
                 contextmenuInstance.$on("menuClick", this.menuClick);
             }
         },
-        douboleClick() {
+        douboleClick(e) {
             if (this.lockStatus) return;
             let node = XMIND.getSelectedNode();
             if (node) {
@@ -306,6 +306,10 @@ export default {
                     editorType: "TEXT",
                     editorText: node.data.text,
                     nodeData: Object.assign({}, node.data),
+                    siteInfo: {
+                        X: e.originEvent.clientX,
+                        Y: e.originEvent.clientY
+                    }
                 });
                 EDITOR.$on("headleCancel", this.clearEditor);
                 EDITOR.$on("headleSubmit", this.editNode);

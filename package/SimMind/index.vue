@@ -89,7 +89,7 @@ export default {
                 EDITOR.$off("headleSubmit", this.addNode);
                 EDITOR.$off("headleSubmit", this.editNode);
                 EDITOR.$off("headleSubmit", this.addLink);
-                EDITOR.$off("headleSubmit", this.addTag);
+                EDITOR.$off("headleSubmit", this.setRank);
                 EDITOR.$off("headleSubmit", this.addImage);
                 closeAlleditor();
                 EDITOR = null;
@@ -132,10 +132,8 @@ export default {
                 this.clearEditor();
             }
         },
-        addTag(resource) {
-            let tagList = XMIND.queryCommandValue("Resource");
-            tagList.push(resource);
-            XMIND.execCommand("Resource", tagList);
+        setRank(resource) {
+            XMIND.execCommand("Priority", resource);
             this.dataUpdata();
             this.clearEditor();
         },
@@ -208,10 +206,10 @@ export default {
                 XMIND.execCommand("RemoveNode");
                 this.dataUpdata();
             }
-            if (e.type === "NODE_TAG") {
-                EDITOR = editorBaseConstructor({ editorType: "TAG_TEXT" });
+            if (e.type === "NODE_RANK") {
+                EDITOR = editorBaseConstructor({ editorType: "RANK_TEXT" });
                 EDITOR.$on("headleCancel", this.clearEditor);
-                EDITOR.$on("headleSubmit", this.addTag);
+                EDITOR.$on("headleSubmit", this.setRank);
             }
             if (e.type === "NODE_LINK") {
                 EDITOR = editorBaseConstructor({
@@ -269,12 +267,12 @@ export default {
                             type: "NODE_EDIT",
                             data: {},
                         },
-                        // {
-                        //     icon: "icon-tag",
-                        //     name: "添加标签",
-                        //     type: "NODE_TAG",
-                        //     data: {},
-                        // },
+                        {
+                            icon: "icon-youxianji",
+                            name: "优先级",
+                            type: "NODE_RANK",
+                            data: {},
+                        },
                         {
                             icon: "icon-share",
                             name: "插入超链接",

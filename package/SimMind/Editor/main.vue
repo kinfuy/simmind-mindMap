@@ -54,13 +54,15 @@
             <i v-else class="iconfont icon-cloud-upload"></i>
         </label>
         <input
-            v-if="editorType === 'TAG_TEXT'"
-            placeholder="支持表情标签"
-            type="text"
+            v-if="editorType === 'RANK_TEXT'"
+            placeholder="设置优先级(支持1-9)"
+            type="number"
             class="editor-input"
-            name="tagText"
-            id="tagText"
-            v-model="tagText"
+            name="rankText"
+            id="rankText"
+            maxlength="1"
+            @input="changeNum()"
+            v-model="rankText"
         />
         <input
             v-if="editorType === 'LINK_URL'"
@@ -84,7 +86,7 @@ export default {
             imageUrl: "",
             linkUrl: "",
             nodeData: {},
-            tagText: "",
+            rankText: "",
             uploadImage: function() {
                 throw new Error("没有提供图片上传方法");
             },
@@ -94,12 +96,17 @@ export default {
         headleCancel() {
             this.$emit("headleCancel", false);
         },
+        changeNum() {
+            if (this.rankText.length > 1) {
+                this.rankText = this.rankText.slice(0, 1);
+            }
+        },
         headleSubmit() {
             if (this.editorType === "IMAGE_URL") {
                 this.$emit("headleSubmit", this.imageUrl);
             }
-            if (this.editorType === "TAG_TEXT") {
-                this.$emit("headleSubmit", this.tagText);
+            if (this.editorType === "RANK_TEXT") {
+                this.$emit("headleSubmit", this.rankText);
             }
             if (this.editorType === "TEXT") {
                 this.$emit("headleSubmit", {
@@ -132,6 +139,13 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+}
+input[type="number"] {
+    -moz-appearance: textfield;
+}
 .edtior {
     position: absolute;
     right: 10px;

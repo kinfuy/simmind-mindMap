@@ -208,6 +208,7 @@ export default {
             }
             if (e.type === "NODE_RANK") {
                 EDITOR = editorBaseConstructor({ editorType: "RANK_TEXT" });
+                this.dataUpdata();
                 EDITOR.$on("headleCancel", this.clearEditor);
                 EDITOR.$on("headleSubmit", this.setRank);
             }
@@ -215,6 +216,7 @@ export default {
                 EDITOR = editorBaseConstructor({
                     editorType: "LINK_URL",
                 });
+                this.dataUpdata();
                 EDITOR.$on("headleCancel", this.clearEditor);
                 EDITOR.$on("headleSubmit", this.addLink);
             }
@@ -223,6 +225,7 @@ export default {
                     editorType: "IMAGE_URL",
                     uploadImage: this.uploadImage,
                 });
+                this.dataUpdata();
                 EDITOR.$on("headleCancel", this.clearEditor);
                 EDITOR.$on("headleSubmit", this.addImage);
             }

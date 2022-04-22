@@ -1,13 +1,17 @@
 # simmind
 
 vue 思维导图，基于 kityminder-core 的二次开发
+
+
+## 重构计划
+- vue3 + typescript 完全重构
 ## demo
 [官方文档](http://simmind.xkongkeji.com) : http://simmind.xkongkeji.com
 
 ## Project setup
 
 ```
-npm install simmind --save
+npm install simmind --savegit
 cnpm install simmind --save
 
 ```

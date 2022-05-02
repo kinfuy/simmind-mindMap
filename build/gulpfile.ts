@@ -1,17 +1,23 @@
+import { resolve } from 'path';
 import { series } from 'gulp';
-import { run, withTask } from './process';
-import { createZip } from './buildZip';
-import { copyFiles } from './copyfile';
-import { buildLib } from './build';
-import { buildStyles } from './buildStyle';
-import { parallel } from 'gulp';
+import { updateVersion, withTask } from '@alqmc/build-utils';
+import { buildVueLib } from '@alqmc/build-vue';
+import { rootpath, enterPath, buildOutpath } from './path';
 export default series(
-  // withTask('update:version', () => run('pnpm run update:version')),
-  withTask('clear', () => run('pnpm run clear')),
-  parallel(
-    buildLib,
-    withTask('build:types', () => run('pnpm build:types'))
-  ),
-  parallel(buildStyles, copyFiles),
-  createZip
+  // withTask('update:version', async () => {
+  //   await updateVersion({
+  //     targetPkgPath: [resolve(rootpath, 'package.json')]
+  //   });
+  // }),
+  withTask('build', async () => {
+    await buildVueLib({
+      baseOptions: {
+        input: resolve(enterPath, 'index.ts'),
+        outPutPath: buildOutpath,
+        pkgPath: resolve(rootpath, 'package.json'),
+        tsConfigPath: resolve(rootpath, 'tsconfig.json'),
+        enterPath
+      }
+    });
+  })
 );

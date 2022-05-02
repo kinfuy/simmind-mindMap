@@ -1,25 +1,22 @@
 {
+  "extends": "@vue/tsconfig/tsconfig.node.json",
   "compilerOptions": {
-    "module": "esnext",
+    "module": "ESNext",
     "declaration": true,
     "removeComments": true,
     "moduleResolution": "node",
-    "declarationDir": "./dist/types",
     "esModuleInterop": true,
     "jsx": "preserve",
     "jsxFactory": "h",
     "jsxFragmentFactory": "Fragment",
     "noLib": false,
-    "target": "es6",
+    "target": "ESNext",
     "sourceMap": true,
     "strict": true,
+    "allowSyntheticDefaultImports": true,
     "suppressExcessPropertyErrors": true,
-    "lib": [
-      "esnext", "dom"
-    ]
+    "lib": ["ESNext", "DOM"],
   },
-  "include": ["package/**/*","typings"],
-  "exclude": [
-    "node_modules"
-  ]
- }
+  "include": ["package/**/*","typings","examples"],
+  "exclude": ["node_modules"]
+}

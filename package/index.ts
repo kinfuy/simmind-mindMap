@@ -1,11 +1,7 @@
-import kity from 'kity';
+import SimMind from './simmind/index.vue';
 import type { App } from 'vue';
-import kityminder from './kityminder-core';
-import './SimMind/Icon/index.css';
-const install = function (Vue: App) {
-  Vue.use(kity);
-  Vue.use(kityminder);
+
+const install = (app: App) => {
+  app.component('SimMind', SimMind);
 };
-export default {
-  install
-};
+export default install;

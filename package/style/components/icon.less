@@ -1,0 +1,20 @@
+.sim-icon {
+  font-size: 16px;
+  &-animation-spin {
+    display: inline-block;
+    animation: loadingCircle 1s infinite linear;
+  }
+  svg {
+    width: 1em;
+    height: 1em;
+    vertical-align: -0.15em;
+    fill: currentColor;
+    overflow: hidden;
+  }
+}
+
+@keyframes loadingCircle {
+  100% {
+    transform: rotate(360deg);
+  }
+}
